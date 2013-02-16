@@ -1,0 +1,18 @@
+<idea-plugin version="2">
+    <name>Output Link Filter</name>
+    <description><![CDATA[
+    Plugin that filters output window for HTTP links and file paths and converts them to clickable links.
+
+    <a href="https://github.com/minchenkov/output-link-filter">https://github.com/minchenkov/output-link-filter</a>
+
+    Based on <a href="https://github.com/siosio/consoleLink">https://github.com/siosio/consoleLink</a>
+    ]]>
+    </description>
+    <version>0.1</version>
+    <vendor>metahouse</vendor>
+    <idea-version since-build="123.72"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <consoleFilterProvider implementation="ru.metahouse.idea.linkfilter.OutputLinkFilterProvider"/>
+    </extensions>
+</idea-plugin>
