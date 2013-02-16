@@ -4,11 +4,15 @@
     Plugin that filters output window for HTTP links and file paths and converts them to clickable links.
 
     <a href="https://github.com/minchenkov/output-link-filter">https://github.com/minchenkov/output-link-filter</a>
-
+    <br/>
     Based on <a href="https://github.com/siosio/consoleLink">https://github.com/siosio/consoleLink</a>
+    <br/>
+    <img src="https://raw.github.com/minchenkov/output-link-filter/master/META-INF/output-link-filter.png" />
+
     ]]>
+
     </description>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor>metahouse</vendor>
     <idea-version since-build="123.72"/>
 
