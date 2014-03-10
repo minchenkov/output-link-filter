@@ -3,13 +3,14 @@ package ru.metahouse.idea.linkfilter;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.ide.browsers.OpenUrlHyperlinkInfo;
-import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OutputLinkFilter
         implements Filter {
@@ -28,29 +29,30 @@ public class OutputLinkFilter
     @Override
     public Result applyFilter(String s, int endPoint) {
         int startPoint = endPoint - s.length();
+        List<ResultItem> result = new ArrayList<ResultItem>();
+
         Matcher matcher = URL_PATTERN.matcher(s);
-        if (matcher.find()) {
+        while (matcher.find()) {
+            result.add(new Result(startPoint + matcher.start(),
+                    startPoint + matcher.end(), new OpenUrlHyperlinkInfo(matcher.group(1))));
+        }
 
-            return new Result(startPoint + matcher.start(),
-                    startPoint + matcher.end(), new OpenUrlHyperlinkInfo(matcher.group(1)));
-        } else {
-            matcher = FILE_PATTERN.matcher(s);
+        matcher = FILE_PATTERN.matcher(s);
+        while (matcher.find()) {
+            VirtualFile file = project.getBaseDir().getFileSystem().findFileByPath(matcher.group(1));
+            if (file != null) {
 
-            if (matcher.find()) {
-                VirtualFile file = project.getBaseDir().getFileSystem().findFileByPath(matcher.group(1));
-                if (file != null) {
+                OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project,
+                        file,
+                        matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1, // line
+                        matcher.group(5) == null ? 0 : Integer.parseInt(matcher.group(5)) - 1 // column
+                );
 
-                    OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project,
-                            file,
-                            matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3)) - 1, // line
-                            matcher.group(5) == null ? 0 : Integer.parseInt(matcher.group(5)) - 1 // column
-                    );
-
-                    return new Result(startPoint + matcher.start(),
-                            startPoint + matcher.end(), new OpenFileHyperlinkInfo(fileDescriptor));
-                }
+                result.add(new Result(startPoint + matcher.start(),
+                        startPoint + matcher.end(), new OpenFileHyperlinkInfo(fileDescriptor)));
             }
         }
-        return new Result(startPoint, endPoint, null, new TextAttributes());
+
+        return new Result(result);
     }
 }
