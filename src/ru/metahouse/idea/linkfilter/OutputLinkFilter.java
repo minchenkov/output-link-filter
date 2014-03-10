@@ -20,6 +20,10 @@ public class OutputLinkFilter
 
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(https?://[-_.!~*\\\\'()a-zA-Z0-9;\\\\/?:\\\\@&=+\\\\$,%#]+)");
+
+    private static final Pattern IP_PATTERN = Pattern.compile(
+            "((?:[0-9]{1,3}\\.){3}[0-9]{1,3}|localhost)(:(\\d+))?(:(\\d+))?(/[a-zA-Z0-9/\\-_\\.]+)*");
+
     private final Project project;
 
     public OutputLinkFilter(Project project) {
@@ -51,6 +55,12 @@ public class OutputLinkFilter
                 result.add(new Result(startPoint + matcher.start(),
                         startPoint + matcher.end(), new OpenFileHyperlinkInfo(fileDescriptor)));
             }
+        }
+
+        matcher = IP_PATTERN.matcher(s);
+        while (matcher.find()) {
+            result.add(new Result(startPoint + matcher.start(),
+                    startPoint + matcher.end(), new OpenUrlHyperlinkInfo("http://" + matcher.group())));
         }
 
         return new Result(result);
